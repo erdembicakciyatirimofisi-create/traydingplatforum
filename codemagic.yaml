@@ -6,17 +6,16 @@ workflows:
       - name: Build iOS App
         script: |
           echo "=== Building TradingPlatform iOS App ==="
-          echo "Available workspaces:"
-          ls -la *.xcworkspace
+          echo "Using workspace: TradingPlatform.xcworkspace"
+          echo "Using scheme: TradingPlatform"
           echo ""
-          echo "Building with xcodebuild..."
+          
           xcodebuild build \
             -workspace "TradingPlatform.xcworkspace" \
-            -scheme "LeanIOS" \
+            -scheme "TradingPlatform" \
             -sdk iphoneos \
             -configuration Release \
-            CODE_SIGNING_ALLOWED=NO \
-            -quiet || echo "Build failed, showing errors:"
+            CODE_SIGNING_ALLOWED=NO
     
     artifacts:
       - ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
