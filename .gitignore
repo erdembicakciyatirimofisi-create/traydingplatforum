@@ -8,8 +8,8 @@ Pods/
 
 # Tuist
 Derived/
-*.xcodeproj
-*.xcworkspace
+#*.xcodeproj
+#*.xcworkspace
 !*.xcworkspace/contents.xcworkspacedata
 .tuist-cache/
 graph.json

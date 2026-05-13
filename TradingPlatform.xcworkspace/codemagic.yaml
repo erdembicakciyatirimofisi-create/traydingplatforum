@@ -1,0 +1,79 @@
+workflows:
+  tradingplatform-ios:
+    name: TradingPlatform iOS Build
+    max_build_duration: 60
+    environment:
+      ios_signing:
+        distribution_type: development
+      vars:
+        TUIST_VERSION: "4.0.0"
+        WORKSPACE: "TradingPlatform.xcworkspace"
+        SCHEME: "LeanIOS"  # Ana scheme adı
+        PROJECT: "TradingPlatform.xcodeproj"
+    scripts:
+      - name: Install Tuist
+        script: |
+          if ! command -v tuist &> /dev/null; then
+            curl -Ls https://install.tuist.io | bash
+          fi
+          tuist version
+      
+      - name: Clean generated files
+        script: |
+          tuist clean || true
+          rm -rf Derived
+          rm -rf TradingPlatform.xcodeproj
+          rm -rf TradingPlatform.xcworkspace
+      
+      - name: Generate Xcode Project with Tuist
+        script: |
+          tuist generate
+      
+      - name: Build iOS App
+        script: |
+          xcodebuild build \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO
+      
+      - name: Run Tests (Opsiyonel)
+        script: |
+          xcodebuild test \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            CODE_SIGNING_ALLOWED=NO || true
+      
+      - name: Archive
+        script: |
+          xcodebuild archive \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -archivePath build/TradingPlatform.xcarchive \
+            CODE_SIGNING_ALLOWED=NO
+      
+      - name: Export IPA
+        script: |
+          mkdir -p build/ipa
+          xcodebuild -exportArchive \
+            -archivePath build/TradingPlatform.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates \
+            CODE_SIGNING_ALLOWED=NO || echo "⚠️ Export failed - code signing required for actual IPA"
+    
+    artifacts:
+      - build/ipa/*.ipa
+      - build/TradingPlatform.xcarchive
+      - Derived/**/*
+    
+    publishing:
+      email:
+        recipients:
+          - erdembicakciyatirimofisi@gmail.com
+        notify:
+          success: true
+          failure: true
