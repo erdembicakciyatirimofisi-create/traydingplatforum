@@ -7,43 +7,14 @@ workflows:
         XCODE_WORKSPACE: "TradingPlatform.xcworkspace"
         XCODE_SCHEME: "LeanIOS"
     scripts:
-      - name: Install Tuist and Build
+      - name: Build iOS App
         script: |
-          # Tuist'i yükle
-          curl -Ls https://install.tuist.io | bash
-          
-          # Tuist'in yüklendiği yolu bul
-          TUIST_PATH="$HOME/.tuist/bin/tuist"
-          
-          # Eğer normal yolda yoksa, farklı yerlerde ara
-          if [ ! -f "$TUIST_PATH" ]; then
-            TUIST_PATH=$(find ~ -name "tuist" -type f 2>/dev/null | head -1)
-          fi
-          
-          echo "Tuist path: $TUIST_PATH"
-          
-          # Tuist ile projeyi oluştur
-          if [ -f "$TUIST_PATH" ]; then
-            $TUIST_PATH generate
-          else
-            echo "Tuist not found, trying with mise..."
-            curl https://mise.run | sh
-            export PATH="$HOME/.local/bin:$PATH"
-            mise use -g tuist@latest
-            mise install tuist@latest
-            export PATH="$HOME/.local/share/mise/installs/tuist/latest/bin:$PATH"
-            tuist generate
-          fi
-          
-          # Build işlemi
           xcodebuild build \
-            -workspace "TradingPlatform.xcworkspace" \
-            -scheme "LeanIOS" \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
             -sdk iphoneos \
             -configuration Release \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO
+            CODE_SIGNING_ALLOWED=NO
     
     artifacts:
       - ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
