@@ -3,19 +3,28 @@ workflows:
     name: TradingPlatform iOS Build
     max_build_duration: 60
     scripts:
-      - name: List all files in repository
+      - name: Build iOS App
         script: |
-          echo "=== Current directory ==="
-          pwd
+          echo "=== Building TradingPlatform iOS App ==="
+          echo "Available workspaces:"
+          ls -la *.xcworkspace
           echo ""
-          echo "=== All files in repository ==="
-          ls -la
-          echo ""
-          echo "=== Xcode project files ==="
-          find . -name "*.xcodeproj" -type d
-          echo ""
-          echo "=== Xcode workspace files ==="
-          find . -name "*.xcworkspace" -type d
-          echo ""
-          echo "=== Top level directories ==="
-          ls -la
+          echo "Building with xcodebuild..."
+          xcodebuild build \
+            -workspace "TradingPlatform.xcworkspace" \
+            -scheme "LeanIOS" \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet || echo "Build failed, showing errors:"
+    
+    artifacts:
+      - ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
+    
+    publishing:
+      email:
+        recipients:
+          - erdembicakciyatirimofisi@gmail.com
+        notify:
+          success: true
+          failure: true
