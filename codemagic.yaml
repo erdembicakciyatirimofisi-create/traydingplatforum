@@ -9,15 +9,20 @@ workflows:
     scripts:
       - name: Install Tuist
         script: |
-          if ! command -v tuist &> /dev/null; then
-            curl -Ls https://install.tuist.io | bash
-          fi
+          # Tuist kurulumu
+          curl -Ls https://install.tuist.io | bash
+          export PATH="$PATH:$HOME/.tuist/bin"
+          
+      - name: Verify Tuist Installation
+        script: |
+          export PATH="$PATH:$HOME/.tuist/bin"
           tuist version
-      
+          
       - name: Generate Project with Tuist
         script: |
+          export PATH="$PATH:$HOME/.tuist/bin"
           tuist generate
-      
+          
       - name: Build iOS App (No Code Signing)
         script: |
           xcodebuild build \
