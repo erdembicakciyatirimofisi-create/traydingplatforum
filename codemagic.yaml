@@ -3,13 +3,27 @@ workflows:
     name: TradingPlatform iOS Build
     max_build_duration: 60
     scripts:
+      - name: Install Tuist and Generate Project
+        script: |
+          echo "=== Installing Tuist ==="
+          curl -Ls https://install.tuist.io | bash
+          export PATH="$HOME/.tuist/bin:$PATH"
+          
+          echo "=== Tuist version ==="
+          tuist version
+          
+          echo "=== Generating Xcode project with Tuist ==="
+          tuist generate
+          
+          echo "=== Checking generated files ==="
+          ls -la Derived/Sources/ || echo "Derived/Sources not found, checking..."
+          find . -name "Tuist*.swift" -type f
+          
       - name: Build iOS App
         script: |
-          echo "=== Building TradingPlatform iOS App ==="
-          echo "Using workspace: TradingPlatform.xcworkspace"
-          echo "Using scheme: TradingPlatform"
-          echo ""
+          export PATH="$HOME/.tuist/bin:$PATH"
           
+          echo "=== Building with xcodebuild ==="
           xcodebuild build \
             -workspace "TradingPlatform.xcworkspace" \
             -scheme "TradingPlatform" \
