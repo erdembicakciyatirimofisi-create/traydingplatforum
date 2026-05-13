@@ -1,28 +1,26 @@
 workflows:
-  ios-workflow:
+  TradingPlatform-iOS-Build:
     name: TradingPlatform iOS Build
-    max_build_duration: 60
     environment:
-      ios_signing:
-        distribution_type: development
-        bundle_identifier: "co.median.ios.bnkzmeo"
+      vars:
+        BUNDLE_ID: "co.median.ios.bnkzmeo"
+        XCODE_PROJECT: "TradingPlatform.xcodeproj"
+        XCODE_SCHEME: "TradingPlatform"
+      xcode: latest
     scripts:
-      - name: Archive and Export IPA
+      - name: Set Bundle ID
         script: |
-          xcodebuild archive \
-            -workspace "TradingPlatform.xcworkspace" \
-            -scheme "TradingPlatform" \
-            -archivePath build/TradingPlatform.xcarchive \
-            CODE_SIGNING_ALLOWED=NO
-          
-          xcodebuild -exportArchive \
-            -archivePath build/TradingPlatform.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist exportOptions.plist \
-            -allowProvisioningUpdates \
-            CODE_SIGNING_ALLOWED=NO || true
-          
-          ls -la build/ipa/
+          find . -name "*.plist" -exec /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" {} \; 2>/dev/null || true
+      - name: Build IPA
+        script: |
+          xcodebuild clean build archive -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -archivePath build/App.xcarchive
+          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build -exportOptionsPlist exportOptions.plist
     artifacts:
-      - build/ipa/*.ipa
-      - build/TradingPlatform.xcarchive
+      - build/*.ipa
+    publishing:
+      scripts:
+        - name: Export IPA with automatic signing
+          script: |
+            /usr/libexec/PlistBuddy -c "Add :method string development" exportOptions.plist
+            /usr/libexec/PlistBuddy -c "Add :signingStyle string automatic" exportOptions.plist
+            /usr/libexec/PlistBuddy -c "Add :teamID string 5A6E7H8K9L" exportOptions.plist
