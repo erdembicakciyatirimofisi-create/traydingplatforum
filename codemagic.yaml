@@ -5,9 +5,11 @@ workflows:
     environment:
       ios_signing:
         distribution_type: development
+        bundle_identifier: "com.lean.ios"  # Bundle ID eklendi
       vars:
         XCODE_WORKSPACE: "TradingPlatform.xcworkspace"
         XCODE_SCHEME: "LeanIOS"
+        BUNDLE_ID: "com.lean.ios"
     scripts:
       - name: Install Tuist
         script: |
