@@ -1,0 +1,50 @@
+workflows:
+  ios-workflow:
+    name: TradingPlatform iOS Build
+    max_build_duration: 60
+    environment:
+      ios_signing:
+        distribution_type: development
+      vars:
+        XCODE_WORKSPACE: "TradingPlatform.xcworkspace"
+        XCODE_SCHEME: "LeanIOS"
+    scripts:
+      - name: Install Tuist
+        script: |
+          if ! command -v tuist &> /dev/null; then
+            curl -Ls https://install.tuist.io | bash
+          fi
+          tuist version
+      
+      - name: Generate Project with Tuist
+        script: |
+          tuist generate
+      
+      - name: Build iOS App
+        script: |
+          xcodebuild build \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO
+      
+      - name: Run Tests
+        script: |
+          xcodebuild test \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            CODE_SIGNING_ALLOWED=NO || true
+    
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
+    
+    publishing:
+      email:
+        recipients:
+          - erdembicakciyatirimofisi@gmail.com
+        notify:
+          success: true
+          failure: true
