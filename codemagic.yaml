@@ -2,12 +2,27 @@ workflows:
   ios-workflow:
     name: TradingPlatform iOS Build
     max_build_duration: 60
+    environment:
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: "co.median.ios.mbemjwo"
     scripts:
-      - name: Build iOS App
+      - name: Archive and Export IPA
         script: |
-          xcodebuild build \
+          xcodebuild archive \
             -workspace "TradingPlatform.xcworkspace" \
             -scheme "TradingPlatform" \
-            -sdk iphoneos \
-            -configuration Release \
+            -archivePath build/TradingPlatform.xcarchive \
             CODE_SIGNING_ALLOWED=NO
+          
+          xcodebuild -exportArchive \
+            -archivePath build/TradingPlatform.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates \
+            CODE_SIGNING_ALLOWED=NO || true
+          
+          ls -la build/ipa/
+    artifacts:
+      - build/ipa/*.ipa
+      - build/TradingPlatform.xcarchive
