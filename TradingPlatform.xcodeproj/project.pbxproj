@@ -889,7 +889,7 @@
 					"-ObjC $(inherited)",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.mbemjwo;
+				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.bnkzmeo;
 				PRODUCT_NAME = TradingPlatform;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
@@ -987,7 +987,7 @@
 					"-ObjC $(inherited)",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.mbemjwo;
+				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.bnkzmeo;
 				PRODUCT_NAME = TradingPlatform;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
@@ -1028,7 +1028,7 @@
 					"$(inherited)",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.mbemjwoTests;
+				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.bnkzmeoTests;
 				PRODUCT_NAME = TradingPlatformTests;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
@@ -1065,7 +1065,7 @@
 					"$(inherited)",
 					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.mbemjwoTests;
+				PRODUCT_BUNDLE_IDENTIFIER = co.median.ios.bnkzmeoTests;
 				PRODUCT_NAME = TradingPlatformTests;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
