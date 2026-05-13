@@ -8,19 +8,58 @@ workflows:
         XCODE_SCHEME: "TradingPlatform"
       xcode: latest
     scripts:
+      - name: Configure Swift Package Registry
+        script: |
+          # Package registry sorununu çözmek için
+          defaults write com.apple.dt.Xcode IDEPackageOnlyUseVersionsFromResolvedFile -bool false
+          
       - name: Set Bundle ID
         script: |
           find . -name "*.plist" -exec /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" {} \; 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "TradingPlatform/Info.plist" 2>/dev/null || true
+          
+      - name: Clean and Resolve Packages
+        script: |
+          rm -rf ~/Library/Caches/org.swift.swiftpm
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          xcodebuild -resolvePackageDependencies -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME"
+          
       - name: Build IPA
         script: |
-          xcodebuild clean build archive -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -archivePath build/App.xcarchive
-          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build -exportOptionsPlist exportOptions.plist
+          xcodebuild clean build archive \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -archivePath build/App.xcarchive \
+            -skipPackagePluginValidation \
+            -allowProvisioningUpdates \
+            -destination 'generic/platform=iOS'
+          
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates
     artifacts:
       - build/*.ipa
     publishing:
       scripts:
-        - name: Export IPA with automatic signing
+        - name: Create export options
           script: |
-            /usr/libexec/PlistBuddy -c "Add :method string development" exportOptions.plist
-            /usr/libexec/PlistBuddy -c "Add :signingStyle string automatic" exportOptions.plist
-            /usr/libexec/PlistBuddy -c "Add :teamID string 5A6E7H8K9L" exportOptions.plist
+            cat > exportOptions.plist << EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key>
+              <string>development</string>
+              <key>signingStyle</key>
+              <string>automatic</string>
+              <key>teamID</key>
+              <string>5A6E7H8K9L</string>
+              <key>compileBitcode</key>
+              <false/>
+              <key>stripSwiftSymbols</key>
+              <true/>
+            </dict>
+            </plist>
+            EOF
