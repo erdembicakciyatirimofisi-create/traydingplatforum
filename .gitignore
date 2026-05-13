@@ -7,7 +7,7 @@ Pods/
 .idea
 
 # Tuist
-Derived/
+#Derived/
 #*.xcodeproj
 #*.xcworkspace
 !*.xcworkspace/contents.xcworkspacedata
